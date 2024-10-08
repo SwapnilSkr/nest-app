@@ -1,12 +1,19 @@
 import {
   BadRequestException,
+  forwardRef,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { CreateUserDto } from '../dtos/createUser.dto';
+import { AuthService } from 'src/auth/providers/auth.service';
 
 @Injectable()
 export class UsersService {
+  constructor(
+    @Inject(forwardRef(() => AuthService))
+    private readonly authService: AuthService,
+  ) {}
   public usersArray: CreateUserDto[] = [];
 
   public checkUserExists(id: number, email: string): CreateUserDto {
@@ -36,6 +43,7 @@ export class UsersService {
     if (foundUser) {
       throw new BadRequestException('User already exists');
     }
+    console.log('auth', this.authService.isAuth());
     this.usersArray.push(createUserDto);
     return createUserDto;
   }
