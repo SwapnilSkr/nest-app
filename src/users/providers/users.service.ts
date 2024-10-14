@@ -1,50 +1,37 @@
-import {
-  BadRequestException,
-  forwardRef,
-  Inject,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
-import { CreateUserDto } from '../dtos/createUser.dto';
-import { AuthService } from 'src/auth/providers/auth.service';
-
+import { GetUsersParamDto } from '../dtos/get-users-param.dto';
+import { Injectable } from '@nestjs/common';
+/**
+ * Class to connect to Users table and perform business operations
+ */
 @Injectable()
 export class UsersService {
-  constructor(
-    @Inject(forwardRef(() => AuthService))
-    private readonly authService: AuthService,
-  ) {}
-  public usersArray: CreateUserDto[] = [];
-
-  public checkUserExists(id: number, email: string): CreateUserDto {
-    const foundUser = this.usersArray.find(
-      (user: CreateUserDto) => user.id === id || user.email === email,
-    );
-    return foundUser;
+  /**
+   * The method to get all the users from the database
+   */
+  public findAll(
+    getUserParamDto: GetUsersParamDto,
+    limt: number,
+    page: number,
+  ) {
+    return [
+      {
+        firstName: 'John',
+        email: 'john@doe.com',
+      },
+      {
+        firstName: 'Alice',
+        email: 'alice@doe.com',
+      },
+    ];
   }
-
-  public findUsers(limit: number, page: number, id?: number) {
-    console.log('limit : ', limit);
-    console.log('page :', page);
-    if (id) {
-      const findUser = this.usersArray.find(
-        (user: CreateUserDto) => user.id === id,
-      );
-      if (findUser) return findUser;
-      else throw new NotFoundException('No user with the given id found');
-    } else return this.usersArray;
-  }
-
-  public createUser(createUserDto: CreateUserDto) {
-    const foundUser = this.checkUserExists(
-      createUserDto.id,
-      createUserDto.email,
-    );
-    if (foundUser) {
-      throw new BadRequestException('User already exists');
-    }
-    console.log('auth', this.authService.isAuth());
-    this.usersArray.push(createUserDto);
-    return createUserDto;
+  /**
+   * Find a single user using the ID of the user
+   */
+  public findOneById(id: string) {
+    return {
+      id: 1234,
+      firstName: 'Alice',
+      email: 'alice@doe.com',
+    };
   }
 }
