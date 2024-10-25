@@ -5,6 +5,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { MetaOptionsModule } from './meta-options/meta-options.module';
 import { Module } from '@nestjs/common';
+import { PaginationModule } from './common/pagination/pagination.module';
 import { PostsModule } from './posts/posts.module';
 import { Tag } from './tags/tag.entity';
 import { TagsModule } from './tags/tags.module';
@@ -31,12 +32,14 @@ const ENV = process.env.NODE_ENV;
       //envFilePath: ['.env.development', '.env'],
       envFilePath: !ENV ? '.env' : `.env.${ENV}`,
       load: [appConfig, databaseConfig],
+      validationSchema: enviromentValidation,
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
+        //entities: [User],
         synchronize: configService.get('database.synchronize'),
         port: configService.get('database.port'),
         username: configService.get('database.user'),
@@ -48,6 +51,7 @@ const ENV = process.env.NODE_ENV;
     }),
     TagsModule,
     MetaOptionsModule,
+    PaginationModule,
   ],
   controllers: [AppController],
   providers: [AppService],
